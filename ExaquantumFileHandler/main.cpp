@@ -38,31 +38,24 @@ vector<string> readFromFile(string fileName) {
     return listOfLines;
 }
 
-map<string, string> listToMap(string fileName) {
+map<string, int> listToMap(string fileName) {
     //store all info on each tag together
-    map<string, string>tags = {};
+    map<string, int>tags = {};
     int counter = 0;
 
     vector<string> list = readFromFile(fileName);
     for (int i = 0;i < list.size();i++) {
-        // make unique key with name so that map will be automatically sorted
-        string uniqueKey;
-        auto nameFound = false;
-        int nameCounter = 0;
-        while (!nameFound) {
-            if (list[i][nameCounter] == ',') {
-                nameFound = true;
+        //check if tag name is in map
+        for (const auto value : tags) {
+            auto found = false;
+            if (value.first == list[i]) {
+                tags[value.first] += 1;
             }
-            else {
-                uniqueKey += list[i][nameCounter];
-                nameCounter++;
+            // if tag name is not in map adds it to map
+            if (!found) {
+                tags[list[i]] = 1;
             }
         }
-        uniqueKey += to_string(counter);
-
-        //add list line to map with key of [line name][incrementing counter]
-        tags[uniqueKey] = list[i];
-        counter++;
     }
     
     return tags;
@@ -70,9 +63,9 @@ map<string, string> listToMap(string fileName) {
 
 //output in alpha order and number of lines
 int outputMap(string fileName) {
-    map<string, string> MAP = listToMap(fileName);
+    map<string, int> MAP = listToMap(fileName);
     for (auto value : MAP) {
-        cout << value.second << "\n\n";
+        cout << value.first << ": " << value.second << " lines \n\n";
     }
     return 0;
 }
@@ -86,5 +79,6 @@ int main(int argc, char* argv[])
     else {
         FILE = getFileDirectory();
     }
+
     outputMap(FILE);
 }
